@@ -784,8 +784,9 @@ input[type="range"] {
   }
 
   .goal-note {
-    padding: 4px 30px clamp(6px, 1.2vh, 10px);
+    padding: 2px 28px clamp(6px, 1vh, 8px);
     font-size: clamp(11px, 1.5vh, 14px);
+    line-height: 1;
   }
 
   .detail-grid {
@@ -799,67 +800,83 @@ input[type="range"] {
   .fire-panel,
   .guardrail-panel {
     min-height: 0;
-    height: clamp(104px, 16vh, 150px);
-    padding: clamp(10px, 1.45vh, 14px) 16px;
+    height: clamp(116px, 17.5vh, 162px);
+    overflow: hidden;
+    padding: clamp(8px, 1.25vh, 12px) 16px;
+  }
+
+  .podium-panel h2,
+  .improved-panel h2,
+  .fire-panel h2,
+  .guardrail-panel h2 {
+    font-size: clamp(17px, 2.7vh, 24px);
   }
 
   .podium-list {
     gap: 8px;
-    margin-top: clamp(8px, 1.4vh, 14px);
+    margin-top: clamp(6px, 1vh, 10px);
   }
 
   .podium-card {
     min-height: 0;
-    height: clamp(66px, 10vh, 96px);
+    height: clamp(74px, 11.4vh, 104px);
+    gap: 2px;
   }
 
   .medal {
-    width: clamp(26px, 3.7vh, 36px);
-    height: clamp(26px, 3.7vh, 36px);
-    font-size: clamp(14px, 2.1vh, 19px);
+    width: clamp(24px, 3.4vh, 32px);
+    height: clamp(24px, 3.4vh, 32px);
+    font-size: clamp(13px, 1.9vh, 17px);
   }
 
   .podium-name {
-    font-size: clamp(12px, 1.9vh, 16px);
+    font-size: clamp(11px, 1.7vh, 15px);
   }
 
   .podium-rate {
-    font-size: clamp(22px, 3.9vh, 34px);
+    font-size: clamp(21px, 3.55vh, 31px);
+    line-height: 0.95;
   }
 
   .podium-card small,
   .fire-panel small {
-    font-size: clamp(10px, 1.35vh, 12px);
+    font-size: clamp(9px, 1.18vh, 11px);
+    line-height: 1;
   }
 
   .improved-panel ol {
-    margin-top: clamp(8px, 1.4vh, 14px);
+    margin-top: clamp(6px, 1vh, 10px);
   }
 
   .improved-panel li {
     grid-template-columns: 26px 1fr 60px;
     gap: 10px;
-    margin-bottom: clamp(6px, 1vh, 10px);
-    font-size: clamp(16px, 2.6vh, 23px);
+    margin-bottom: clamp(3px, 0.55vh, 6px);
+    font-size: clamp(14px, 2.25vh, 20px);
+    line-height: 1.05;
   }
 
   .fire-picker {
-    margin-top: clamp(8px, 1.7vh, 16px);
-    font-size: clamp(18px, 2.8vh, 26px);
+    margin-top: clamp(6px, 1.1vh, 10px);
+    font-size: clamp(16px, 2.5vh, 23px);
+    line-height: 1;
   }
 
   .fire-change {
-    font-size: clamp(30px, 5.3vh, 48px);
+    font-size: clamp(30px, 4.9vh, 44px);
+    line-height: 0.95;
   }
 
   .guardrail-panel strong {
-    margin-top: clamp(10px, 1.9vh, 18px);
-    font-size: clamp(30px, 5.3vh, 48px);
+    margin-top: clamp(8px, 1.35vh, 12px);
+    font-size: clamp(30px, 4.9vh, 44px);
+    line-height: 0.95;
   }
 
   .guardrail-panel p {
-    margin: 8px 0 0;
-    font-size: clamp(12px, 1.7vh, 16px);
+    margin: 7px 0 0;
+    font-size: clamp(10px, 1.45vh, 14px);
+    line-height: 1.18;
   }
 
   .control-band {
