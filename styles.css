@@ -303,15 +303,16 @@ body {
 }
 
 .bar-fill {
+  display: block;
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #0870d8, #0f5bb9);
+  background: linear-gradient(90deg, #1aa3ff, #0d6fd7);
   border-radius: 0 4px 4px 0;
   transition: width 260ms ease;
 }
 
 .shift .bar-fill {
-  background: linear-gradient(90deg, #57d22d, #2b9d1e);
+  background: linear-gradient(90deg, #7bea40, #2fbf24);
 }
 
 .goal-line {
