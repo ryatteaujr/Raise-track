@@ -29,6 +29,11 @@ body {
   font-family: "Trebuchet MS", "Aptos Display", "Segoe UI", sans-serif;
 }
 
+html,
+body {
+  min-height: 100%;
+}
+
 .dashboard-shell {
   width: min(1800px, 100%);
   min-height: 100vh;
@@ -532,6 +537,246 @@ input[type="range"] {
   display: block;
   margin-top: 14px;
   border: 2px solid var(--line);
+}
+
+@media (min-width: 1121px) {
+  body {
+    overflow: hidden;
+  }
+
+  .dashboard-shell {
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(8px, 1.45vh, 14px) 20px;
+  }
+
+  .topbar {
+    grid-template-columns: 250px 1fr 205px;
+    gap: 18px;
+    padding-bottom: clamp(8px, 1.2vh, 12px);
+  }
+
+  .brand-mark {
+    width: clamp(42px, 6vh, 58px);
+    height: clamp(42px, 6vh, 58px);
+    font-size: clamp(26px, 4vh, 36px);
+  }
+
+  .brand-title {
+    font-size: clamp(23px, 3.2vh, 30px);
+  }
+
+  .brand-subtitle {
+    font-size: clamp(11px, 1.65vh, 15px);
+    letter-spacing: 4px;
+  }
+
+  .title-block h1 {
+    font-size: clamp(46px, 7.6vh, 72px);
+  }
+
+  .title-block p {
+    margin-top: 5px;
+    font-size: clamp(20px, 3.3vh, 28px);
+  }
+
+  .time-label {
+    font-size: clamp(38px, 6vh, 54px);
+  }
+
+  .date-label {
+    margin-top: 4px;
+    font-size: clamp(17px, 2.6vh, 23px);
+  }
+
+  .kpi-card {
+    min-height: 0;
+    height: clamp(92px, 13.5vh, 124px);
+    grid-template-columns: clamp(50px, 5.2vw, 76px) 1fr;
+    padding: clamp(12px, 1.7vh, 18px);
+  }
+
+  .kpi-icon {
+    font-size: clamp(32px, 5.2vh, 50px);
+  }
+
+  .kpi-card span {
+    font-size: clamp(12px, 1.8vh, 15px);
+  }
+
+  .kpi-card strong {
+    font-size: clamp(38px, 6.2vh, 54px);
+  }
+
+  .kpi-card small {
+    font-size: clamp(11px, 1.55vh, 14px);
+  }
+
+  .race-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 12px;
+    margin-top: clamp(8px, 1.4vh, 12px);
+  }
+
+  .rank-panel {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rank-panel header {
+    padding: clamp(10px, 1.55vh, 14px) 20px;
+  }
+
+  .rank-panel h2,
+  .detail-grid h2 {
+    font-size: clamp(18px, 3.1vh, 28px);
+  }
+
+  .rank-heading,
+  .rank-row {
+    grid-template-columns: 62px 160px minmax(120px, 1fr) 64px;
+    gap: 10px;
+  }
+
+  .rank-heading {
+    padding: clamp(8px, 1.2vh, 12px) 22px 4px;
+    font-size: clamp(11px, 1.55vh, 14px);
+  }
+
+  .rank-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 22px;
+  }
+
+  .rank-row {
+    min-height: clamp(29px, 4.15vh, 38px);
+  }
+
+  .rank-number,
+  .rank-value {
+    font-size: clamp(18px, 3.1vh, 24px);
+  }
+
+  .picker-name {
+    gap: 10px;
+    font-size: clamp(16px, 2.8vh, 23px);
+  }
+
+  .picker-code {
+    width: clamp(26px, 3.5vh, 34px);
+    height: clamp(26px, 3.5vh, 34px);
+    font-size: clamp(12px, 1.8vh, 17px);
+  }
+
+  .bar-track {
+    height: clamp(14px, 2.25vh, 20px);
+  }
+
+  .goal-note {
+    padding: 4px 30px clamp(6px, 1.2vh, 10px);
+    font-size: clamp(11px, 1.5vh, 14px);
+  }
+
+  .detail-grid {
+    grid-template-columns: 1.25fr 0.9fr 0.55fr 0.95fr;
+    gap: 12px;
+    margin-top: clamp(8px, 1.4vh, 12px);
+  }
+
+  .podium-panel,
+  .improved-panel,
+  .fire-panel,
+  .guardrail-panel {
+    min-height: 0;
+    height: clamp(104px, 16vh, 150px);
+    padding: clamp(10px, 1.45vh, 14px) 16px;
+  }
+
+  .podium-list {
+    gap: 8px;
+    margin-top: clamp(8px, 1.4vh, 14px);
+  }
+
+  .podium-card {
+    min-height: 0;
+    height: clamp(66px, 10vh, 96px);
+  }
+
+  .medal {
+    width: clamp(26px, 3.7vh, 36px);
+    height: clamp(26px, 3.7vh, 36px);
+    font-size: clamp(14px, 2.1vh, 19px);
+  }
+
+  .podium-name {
+    font-size: clamp(12px, 1.9vh, 16px);
+  }
+
+  .podium-rate {
+    font-size: clamp(22px, 3.9vh, 34px);
+  }
+
+  .podium-card small,
+  .fire-panel small {
+    font-size: clamp(10px, 1.35vh, 12px);
+  }
+
+  .improved-panel ol {
+    margin-top: clamp(8px, 1.4vh, 14px);
+  }
+
+  .improved-panel li {
+    grid-template-columns: 26px 1fr 60px;
+    gap: 10px;
+    margin-bottom: clamp(6px, 1vh, 10px);
+    font-size: clamp(16px, 2.6vh, 23px);
+  }
+
+  .fire-picker {
+    margin-top: clamp(8px, 1.7vh, 16px);
+    font-size: clamp(18px, 2.8vh, 26px);
+  }
+
+  .fire-change {
+    font-size: clamp(30px, 5.3vh, 48px);
+  }
+
+  .guardrail-panel strong {
+    margin-top: clamp(10px, 1.9vh, 18px);
+    font-size: clamp(30px, 5.3vh, 48px);
+  }
+
+  .guardrail-panel p {
+    margin: 8px 0 0;
+    font-size: clamp(12px, 1.7vh, 16px);
+  }
+
+  .control-band {
+    grid-template-columns: auto 1fr 150px;
+    gap: 14px;
+    margin-top: clamp(8px, 1.3vh, 12px);
+    padding: 8px 14px;
+  }
+
+  button {
+    min-width: 48px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .snapshot-label {
+    font-size: 12px;
+  }
+
+  .proposal-reference {
+    display: none;
+  }
 }
 
 @media (max-width: 1120px) {
