@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Picker Performance Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark">P</div>
+          <div>
+            <div class="brand-title">Hardware</div>
+            <div class="brand-subtitle">Wholesalers</div>
+          </div>
+        </div>
+        <div class="title-block">
+          <h1>Picker Performance</h1>
+          <p>Real-time. Compete. Win.</p>
+        </div>
+        <div class="clock-block">
+          <div id="timeLabel" class="time-label">10:00 AM</div>
+          <div id="dateLabel" class="date-label">Apr 25, 2026</div>
+        </div>
+      </header>
+
+      <section class="kpi-grid" aria-label="Performance summary">
+        <article class="kpi-card blue">
+          <div class="kpi-icon">UP</div>
+          <div>
+            <span>Average Pick Rate</span>
+            <strong id="avgRate">0</strong>
+            <small>lines / hour</small>
+          </div>
+        </article>
+        <article class="kpi-card green">
+          <div class="kpi-icon">GO</div>
+          <div>
+            <span>Today's Goal</span>
+            <strong id="goalRate">150</strong>
+            <small>lines / hour</small>
+          </div>
+        </article>
+        <article class="kpi-card gold">
+          <div class="kpi-icon">#1</div>
+          <div>
+            <span>Top Pick Rate Today</span>
+            <strong id="topRate">0</strong>
+            <small id="topPickerLabel">lines / hour</small>
+          </div>
+        </article>
+        <article class="kpi-card teal">
+          <div class="kpi-icon">ON</div>
+          <div>
+            <span>Active Pickers</span>
+            <strong id="activePickers">0</strong>
+            <small>on the clock</small>
+          </div>
+        </article>
+        <article class="kpi-card orange">
+          <div class="kpi-icon">T</div>
+          <div>
+            <span>Shift Time</span>
+            <strong id="shiftRemaining">00:00</strong>
+            <small>time remaining</small>
+          </div>
+        </article>
+      </section>
+
+      <section class="race-grid">
+        <article class="rank-panel live">
+          <header>
+            <h2>Live Race - Current Hour</h2>
+            <span>lines / hour</span>
+          </header>
+          <div class="rank-heading">
+            <span>Rank</span>
+            <span>Picker</span>
+            <span>Lines / Hour</span>
+          </div>
+          <ol id="liveRace" class="rank-list"></ol>
+          <div class="goal-note">Goal 150 LPH</div>
+        </article>
+
+        <article class="rank-panel shift">
+          <header>
+            <h2>Shift Race - Total Today</h2>
+            <span>lines / hour avg</span>
+          </header>
+          <div class="rank-heading">
+            <span>Rank</span>
+            <span>Picker</span>
+            <span>Lines / Hour Avg</span>
+          </div>
+          <ol id="shiftRace" class="rank-list"></ol>
+          <div class="goal-note">Goal 150 LPH</div>
+        </article>
+      </section>
+
+      <section class="detail-grid">
+        <article class="podium-panel">
+          <h2>Top 3 Pickers Today</h2>
+          <div id="podium" class="podium-list"></div>
+        </article>
+
+        <article class="improved-panel">
+          <h2>Most Improved</h2>
+          <ol id="improvedList"></ol>
+        </article>
+
+        <article class="fire-panel">
+          <h2>On Fire</h2>
+          <div id="firePicker" class="fire-picker">-</div>
+          <div id="fireChange" class="fire-change">+0%</div>
+          <small>last 30 min</small>
+        </article>
+
+        <article class="guardrail-panel">
+          <h2>Quality Guardrail</h2>
+          <strong id="qualityRate">99.2%</strong>
+          <p id="qualityNote">Accuracy stays visible beside speed.</p>
+        </article>
+      </section>
+
+      <section class="control-band" aria-label="Timeline controls">
+        <div class="control-buttons">
+          <button id="backBtn" title="Previous snapshot" type="button">&lt;</button>
+          <button id="playBtn" title="Play or pause timeline" type="button">Play</button>
+          <button id="nextBtn" title="Next snapshot" type="button">&gt;</button>
+          <button id="resetBtn" title="Reset timeline" type="button">Reset</button>
+        </div>
+        <input id="timelineSlider" type="range" min="0" max="0" value="0" aria-label="Timeline position">
+        <div id="snapshotLabel" class="snapshot-label">Snapshot 1 of 1</div>
+      </section>
+
+      <section class="proposal-reference">
+        <details>
+          <summary>Proposal Image Reference</summary>
+          <img src="assets/picker-board-proposal.png" alt="Picker board proposal reference image">
+        </details>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

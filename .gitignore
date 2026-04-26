@@ -1,0 +1,7 @@
+# OS/editor noise
+Thumbs.db
+.DS_Store
+.vscode/
+
+# Local-only scratch files
+*.log
