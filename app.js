@@ -185,6 +185,10 @@ const snapshots = [
 
 let currentIndex = 3;
 let timer = null;
+const previousRanks = {
+  live: new Map(),
+  shift: new Map()
+};
 
 const els = {
   timeLabel: document.getElementById("timeLabel"),
@@ -217,14 +221,46 @@ function average(rows) {
   return Math.round(rows.reduce((sum, row) => sum + row[2], 0) / rows.length);
 }
 
-function renderRankList(container, rows, maxValue) {
+function getRankMovement(boardKey, code, newRank) {
+  const oldRank = previousRanks[boardKey].get(code);
+
+  if (!oldRank) {
+    return { className: "", label: "" };
+  }
+
+  const delta = oldRank - newRank;
+
+  if (delta > 0) {
+    return { className: "moved-up", label: `UP ${delta}` };
+  }
+
+  if (delta < 0) {
+    return { className: "moved-down", label: `DOWN ${Math.abs(delta)}` };
+  }
+
+  return { className: "", label: "" };
+}
+
+function renderRankList(container, rows, maxValue, boardKey) {
+  const oldPositions = new Map(
+    [...container.querySelectorAll(".rank-row")].map(row => [
+      row.dataset.code,
+      row.getBoundingClientRect().top
+    ])
+  );
+
   container.innerHTML = rows.map((row, index) => {
     const [code, name, value] = row;
     const width = Math.max(7, Math.round((value / maxValue) * 100));
+    const movement = getRankMovement(boardKey, code, index + 1);
+    const movementBadge = movement.label
+      ? `<span class="movement-pill">${movement.label}</span>`
+      : "";
+
     return `
-      <li class="rank-row">
+      <li class="rank-row ${movement.className}" data-code="${code}">
         <span class="rank-number">${index + 1}</span>
-        <span class="picker-name"><span class="picker-code">${code}</span>${name}</span>
+        <span class="picker-name"><span class="picker-code">${code}</span><span class="picker-label">${name}</span>${movementBadge}</span>
         <span class="bar-track">
           <span class="bar-fill" style="width:${width}%"></span>
           <span class="goal-line"></span>
@@ -233,6 +269,32 @@ function renderRankList(container, rows, maxValue) {
       </li>
     `;
   }).join("");
+
+  rows.forEach((row, index) => previousRanks[boardKey].set(row[0], index + 1));
+
+  container.querySelectorAll(".rank-row").forEach(row => {
+    const oldTop = oldPositions.get(row.dataset.code);
+
+    if (oldTop === undefined) {
+      return;
+    }
+
+    const newTop = row.getBoundingClientRect().top;
+    const offset = oldTop - newTop;
+
+    if (offset === 0) {
+      return;
+    }
+
+    row.style.transform = `translateY(${offset}px)`;
+    row.style.transition = "none";
+    row.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      row.style.transform = "";
+      row.style.transition = "";
+    });
+  });
 }
 
 function renderPodium(rows) {
@@ -275,8 +337,8 @@ function renderSnapshot(index) {
   els.timelineSlider.value = String(currentIndex);
   els.snapshotLabel.textContent = `Snapshot ${currentIndex + 1} of ${snapshots.length}`;
 
-  renderRankList(els.liveRace, snapshot.live, maxValue);
-  renderRankList(els.shiftRace, snapshot.shift, maxValue);
+  renderRankList(els.liveRace, snapshot.live, maxValue, "live");
+  renderRankList(els.shiftRace, snapshot.shift, maxValue, "shift");
   renderPodium(snapshot.shift);
   renderImproved(snapshot.improved);
 }
