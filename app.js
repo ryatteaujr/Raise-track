@@ -190,6 +190,214 @@ const previousRanks = {
   shift: new Map()
 };
 
+const helpItems = [
+  {
+    key: "averagePickRate",
+    title: "Average Pick Rate",
+    meaning: "Average productivity for the active picker group. It answers: how fast is the floor picking right now?",
+    calculation: "For a fair production version, calculate this as total eligible picked lines divided by total eligible active picking hours for the selected warehouse, shift, and comparable picking area.",
+    apiExample: {
+      averageLinesPerHour: 157,
+      activePickerCount: 14,
+      goalLinesPerHour: 150,
+      lastUpdated: "2026-04-28T10:15:30-04:00"
+    },
+    as400: [
+      "INVITMP: count eligible pick-line records by PICKER, ITDTPK, ITBPTM/ITEPTM, ITPKST.",
+      "PIKEMPP: join PICKER to PEMP for picker identity.",
+      "BCPDOWN: subtract approved downtime if business rules allow it."
+    ]
+  },
+  {
+    key: "todaysGoal",
+    title: "Today's Goal",
+    meaning: "The target lines-per-hour rate used for KPI comparison and the dashed goal line in the rankings.",
+    calculation: "The prototype uses 150 LPH. Production should decide whether the goal is global or varies by warehouse, shift, department, pick type, or zone.",
+    apiExample: {
+      goalLinesPerHour: 150,
+      warehouseId: "WH1",
+      shiftId: "2026-04-28-DAY",
+      zone: "Aisle Pick"
+    },
+    as400: [
+      "DPTINFP: DEPT, SAISLE, EAISLE, ACTIVE, RFPICK may help define zone-specific rules.",
+      "May need a new Laravel configuration table if goals are business-defined rather than stored in AS/400."
+    ]
+  },
+  {
+    key: "topPickRate",
+    title: "Top Pick Rate Today",
+    meaning: "The highest shift-average pick rate among active eligible pickers.",
+    calculation: "Find each picker's shiftLinesPerHour, then take the maximum value. The label shows the picker who currently owns that top rate.",
+    apiExample: {
+      topLinesPerHour: 191,
+      topPicker: {
+        pickerId: "123",
+        pickerCode: "TA",
+        displayName: "Thomas A."
+      }
+    },
+    as400: [
+      "INVITMP: PICKER, ITDTPK, ITBPTM/ITEPTM, ITPKST for completed pick lines.",
+      "PIKEMPP: PEMP, PNAME for display name."
+    ]
+  },
+  {
+    key: "activePickers",
+    title: "Active Pickers",
+    meaning: "Number of pickers currently included in the dashboard population.",
+    calculation: "Count distinct active picker IDs with eligible pick activity during the current shift or currently assigned picking window. Decide whether to exclude people on downtime, training, breaks, or non-picking work.",
+    apiExample: {
+      activePickerCount: 14,
+      activePickerIds: ["101", "102", "103"]
+    },
+    as400: [
+      "INVITMP: distinct PICKER values with current shift pick records.",
+      "PIKEMPP: validate picker exists and get PNAME.",
+      "BCPDOWN: may exclude or adjust employees with approved downtime."
+    ]
+  },
+  {
+    key: "shiftTime",
+    title: "Shift Time",
+    meaning: "Remaining scheduled time in the active shift.",
+    calculation: "remainingShiftMinutes = shiftEnd - currentTime. The dashboard displays this as hours and minutes.",
+    apiExample: {
+      shiftStart: "2026-04-28T07:00:00-04:00",
+      shiftEnd: "2026-04-28T15:30:00-04:00",
+      currentTime: "2026-04-28T10:15:00-04:00",
+      remainingShiftMinutes: 315
+    },
+    as400: [
+      "Shift schedule source is not shown in the current schemas.",
+      "Confirm with Bryan whether shift start/end comes from AS/400, Laravel config, or a new schedule table."
+    ]
+  },
+  {
+    key: "liveRace",
+    title: "Live Race - Current Hour",
+    meaning: "Current-hour leaderboard. This is the fast-moving race showing recent picker pace.",
+    calculation: "currentHourLinesPerHour = eligible pick lines in the current clock hour or rolling 60-minute window divided by active picking time in that same window. Confirm which definition operations wants.",
+    apiExample: {
+      rankings: [
+        {
+          pickerId: "123",
+          pickerCode: "TA",
+          displayName: "Thomas A.",
+          currentHourLines: 82,
+          currentHourLinesPerHour: 164,
+          rankCurrentHour: 1,
+          previousRankCurrentHour: 3
+        }
+      ]
+    },
+    as400: [
+      "INVITMP: ITDTPK plus ITBPTM/ITEPTM provide pick timestamps.",
+      "INVITMP: PICKER identifies picker; ITPKST should define which rows count.",
+      "PIKEMPP: PEMP and PNAME provide display identity."
+    ]
+  },
+  {
+    key: "shiftRace",
+    title: "Shift Race - Total Today",
+    meaning: "Full-shift leaderboard. This is the steadier ranking based on average performance across the shift so far.",
+    calculation: "shiftLinesPerHour = total eligible pick lines this shift divided by active picking hours this shift. Approved downtime may reduce the denominator if that rule is adopted.",
+    apiExample: {
+      rankings: [
+        {
+          pickerId: "123",
+          pickerCode: "TA",
+          displayName: "Thomas A.",
+          shiftLines: 512,
+          shiftLinesPerHour: 169,
+          activeMinutes: 182,
+          rankShift: 1,
+          previousRankShift: 2
+        }
+      ]
+    },
+    as400: [
+      "INVITMP: count completed pick lines by PICKER for the shift date/time window.",
+      "BCPDOWN: DTEMP, DTDATE, DTSTART, DTEND, APPROVAL can support downtime adjustments.",
+      "DPTINFP/ITWSEC/ITWLOC: needed for fair zone grouping."
+    ]
+  },
+  {
+    key: "topThree",
+    title: "Top 3 Pickers Today",
+    meaning: "A podium view of the highest full-shift performers.",
+    calculation: "Sort the full-shift ranking by shiftLinesPerHour descending and take the first three eligible pickers.",
+    apiExample: {
+      topThree: [
+        { pickerId: "123", displayName: "Thomas A.", shiftLinesPerHour: 169 },
+        { pickerId: "104", displayName: "Lauren D.", shiftLinesPerHour: 164 },
+        { pickerId: "118", displayName: "Joe Y.", shiftLinesPerHour: 162 }
+      ]
+    },
+    as400: [
+      "Same source as Shift Race: INVITMP plus PIKEMPP.",
+      "Confirm whether this podium should be overall or per zone."
+    ]
+  },
+  {
+    key: "mostImproved",
+    title: "Most Improved",
+    meaning: "Shows pickers whose current performance is most improved compared with their own historical baseline.",
+    calculation: "improvementLinesPerHour = todayLinesPerHour - trailingAverageLinesPerHour. A trailing baseline could use the last 10 eligible shifts, but operations must approve the window.",
+    apiExample: {
+      mostImproved: [
+        {
+          pickerId: "205",
+          displayName: "Katie P.",
+          todayLinesPerHour: 153,
+          trailingAverageLinesPerHour: 135,
+          improvementLinesPerHour: 18
+        }
+      ]
+    },
+    as400: [
+      "Historical pick-line detail: Bryan says current and previous year line-level history exists.",
+      "Need confirmation whether historical source is INVITMP archive or another table.",
+      "Use same zone/work-type rules when comparing historical averages."
+    ]
+  },
+  {
+    key: "onFire",
+    title: "On Fire",
+    meaning: "Momentum callout for the picker with the strongest recent surge.",
+    calculation: "Use a short window such as last 15 or 30 minutes. Compare recent LPH to that picker's shift average or historical baseline.",
+    apiExample: {
+      onFire: {
+        pickerId: "123",
+        displayName: "Thomas A.",
+        last15MinuteLinesPerHour: 188,
+        momentumStatus: "on_fire"
+      }
+    },
+    as400: [
+      "INVITMP: ITDTPK and ITBPTM/ITEPTM support short-window line counts.",
+      "Decide if the demo label remains last 30 min or changes to last15MinuteLinesPerHour."
+    ]
+  },
+  {
+    key: "qualityGuardrail",
+    title: "Quality Guardrail",
+    meaning: "Keeps quality visible beside speed so the dashboard does not encourage speed-only behavior.",
+    calculation: "accuracyPercent can be calculated from audit/check results, but Bryan noted audits are sampled and not standardized across all warehouses. Treat as informational or supervisor-reviewed until standardized.",
+    apiExample: {
+      accuracyPercent: 99.2,
+      errorCount: 1,
+      qualityDisqualified: false,
+      supervisorApproved: false
+    },
+    as400: [
+      "QCPCHKL: QSPICKER, QPCKNAME, QPICKDT, QPICKTM, QCHKDT, QCHKTM.",
+      "QCPCHKL: QCHKCODE likely identifies check result; need valid code definitions.",
+      "QCPCHKL: QSDEPT and QSPIKTYP help separate department and pick type."
+    ]
+  }
+];
+
 const els = {
   timeLabel: document.getElementById("timeLabel"),
   dateLabel: document.getElementById("dateLabel"),
@@ -212,10 +420,22 @@ const els = {
   nextBtn: document.getElementById("nextBtn"),
   resetBtn: document.getElementById("resetBtn"),
   timelineSlider: document.getElementById("timelineSlider"),
-  snapshotLabel: document.getElementById("snapshotLabel")
+  snapshotLabel: document.getElementById("snapshotLabel"),
+  helpBtn: document.getElementById("helpBtn"),
+  helpOverlay: document.getElementById("helpOverlay"),
+  helpPanel: document.getElementById("helpPanel"),
+  helpStep: document.getElementById("helpStep"),
+  helpTitle: document.getElementById("helpTitle"),
+  helpBody: document.getElementById("helpBody"),
+  helpCloseBtn: document.getElementById("helpCloseBtn"),
+  helpPrevBtn: document.getElementById("helpPrevBtn"),
+  helpNextBtn: document.getElementById("helpNextBtn")
 };
 
 els.timelineSlider.max = String(snapshots.length - 1);
+
+let helpActive = false;
+let currentHelpIndex = 0;
 
 function average(rows) {
   return Math.round(rows.reduce((sum, row) => sum + row[2], 0) / rows.length);
@@ -374,5 +594,104 @@ els.timelineSlider.addEventListener("input", event => {
   setPlaying(false);
   renderSnapshot(Number(event.target.value));
 });
+
+els.helpBtn.addEventListener("click", () => {
+  if (helpActive) {
+    closeHelp();
+  } else {
+    openHelp(0);
+  }
+});
+
+els.helpCloseBtn.addEventListener("click", closeHelp);
+els.helpOverlay.addEventListener("click", closeHelp);
+els.helpPrevBtn.addEventListener("click", () => openHelp(currentHelpIndex - 1));
+els.helpNextBtn.addEventListener("click", () => openHelp(currentHelpIndex + 1));
+
+document.addEventListener("click", event => {
+  if (!helpActive) {
+    return;
+  }
+
+  const helpTarget = event.target.closest("[data-help]");
+  if (!helpTarget) {
+    return;
+  }
+
+  event.preventDefault();
+  const index = helpItems.findIndex(item => item.key === helpTarget.dataset.help);
+  if (index >= 0) {
+    openHelp(index);
+  }
+});
+
+document.addEventListener("keydown", event => {
+  if (!helpActive) {
+    return;
+  }
+
+  if (event.key === "Escape") {
+    closeHelp();
+  }
+
+  if (event.key === "ArrowRight") {
+    openHelp(currentHelpIndex + 1);
+  }
+
+  if (event.key === "ArrowLeft") {
+    openHelp(currentHelpIndex - 1);
+  }
+});
+
+function openHelp(index) {
+  helpActive = true;
+  currentHelpIndex = (index + helpItems.length) % helpItems.length;
+  document.body.classList.add("help-active");
+  els.helpBtn.setAttribute("aria-pressed", "true");
+  els.helpOverlay.hidden = false;
+  els.helpPanel.hidden = false;
+  renderHelp();
+}
+
+function closeHelp() {
+  helpActive = false;
+  document.body.classList.remove("help-active");
+  els.helpBtn.setAttribute("aria-pressed", "false");
+  els.helpOverlay.hidden = true;
+  els.helpPanel.hidden = true;
+  document.querySelectorAll(".help-selected").forEach(node => node.classList.remove("help-selected"));
+}
+
+function renderHelp() {
+  const item = helpItems[currentHelpIndex];
+  document.querySelectorAll(".help-selected").forEach(node => node.classList.remove("help-selected"));
+  const target = document.querySelector(`[data-help="${item.key}"]`);
+  if (target) {
+    target.classList.add("help-selected");
+    target.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+
+  els.helpStep.textContent = `${currentHelpIndex + 1} of ${helpItems.length}`;
+  els.helpTitle.textContent = item.title;
+  els.helpBody.innerHTML = `
+    <h3>What this value means</h3>
+    <p>${escapeHtml(item.meaning)}</p>
+    <h3>How it is calculated</h3>
+    <p>${escapeHtml(item.calculation)}</p>
+    <h3>API shape</h3>
+    <pre>${escapeHtml(JSON.stringify(item.apiExample, null, 2))}</pre>
+    <h3>Likely AS/400 mapping</h3>
+    <ul>${item.as400.map(line => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
+  `;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 renderSnapshot(currentIndex);

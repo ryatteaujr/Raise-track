@@ -20,10 +20,11 @@
           <div id="timeLabel" class="time-label">10:00 AM</div>
           <div id="dateLabel" class="date-label">Apr 25, 2026</div>
         </div>
+        <button id="helpBtn" class="help-button" type="button" aria-pressed="false">Help</button>
       </header>
 
       <section class="kpi-grid" aria-label="Performance summary">
-        <article class="kpi-card blue">
+        <article class="kpi-card blue" data-help="averagePickRate">
           <div class="kpi-icon">UP</div>
           <div>
             <span>Average Pick Rate</span>
@@ -31,7 +32,7 @@
             <small>lines / hour</small>
           </div>
         </article>
-        <article class="kpi-card green">
+        <article class="kpi-card green" data-help="todaysGoal">
           <div class="kpi-icon">GO</div>
           <div>
             <span>Today's Goal</span>
@@ -39,7 +40,7 @@
             <small>lines / hour</small>
           </div>
         </article>
-        <article class="kpi-card gold">
+        <article class="kpi-card gold" data-help="topPickRate">
           <div class="kpi-icon">#1</div>
           <div>
             <span>Top Pick Rate Today</span>
@@ -47,7 +48,7 @@
             <small id="topPickerLabel">lines / hour</small>
           </div>
         </article>
-        <article class="kpi-card teal">
+        <article class="kpi-card teal" data-help="activePickers">
           <div class="kpi-icon">ON</div>
           <div>
             <span>Active Pickers</span>
@@ -55,7 +56,7 @@
             <small>on the clock</small>
           </div>
         </article>
-        <article class="kpi-card orange">
+        <article class="kpi-card orange" data-help="shiftTime">
           <div class="kpi-icon">T</div>
           <div>
             <span>Shift Time</span>
@@ -66,7 +67,7 @@
       </section>
 
       <section class="race-grid">
-        <article class="rank-panel live">
+        <article class="rank-panel live" data-help="liveRace">
           <header>
             <h2>Live Race - Current Hour</h2>
             <span>lines / hour</span>
@@ -80,7 +81,7 @@
           <div class="goal-note">Goal 150 LPH</div>
         </article>
 
-        <article class="rank-panel shift">
+        <article class="rank-panel shift" data-help="shiftRace">
           <header>
             <h2>Shift Race - Total Today</h2>
             <span>lines / hour avg</span>
@@ -96,24 +97,24 @@
       </section>
 
       <section class="detail-grid">
-        <article class="podium-panel">
+        <article class="podium-panel" data-help="topThree">
           <h2>Top 3 Pickers Today</h2>
           <div id="podium" class="podium-list"></div>
         </article>
 
-        <article class="improved-panel">
+        <article class="improved-panel" data-help="mostImproved">
           <h2>Most Improved</h2>
           <ol id="improvedList"></ol>
         </article>
 
-        <article class="fire-panel">
+        <article class="fire-panel" data-help="onFire">
           <h2>On Fire</h2>
           <div id="firePicker" class="fire-picker">-</div>
           <div id="fireChange" class="fire-change">+0%</div>
           <small>last 30 min</small>
         </article>
 
-        <article class="guardrail-panel">
+        <article class="guardrail-panel" data-help="qualityGuardrail">
           <h2>Quality Guardrail</h2>
           <strong id="qualityRate">99.2%</strong>
           <p id="qualityNote">Accuracy stays visible beside speed.</p>
@@ -138,6 +139,22 @@
         </details>
       </section>
     </main>
+
+    <div id="helpOverlay" class="help-overlay" hidden></div>
+    <aside id="helpPanel" class="help-panel" hidden aria-live="polite" aria-label="Dashboard data help">
+      <div class="help-panel-header">
+        <div>
+          <div id="helpStep" class="help-step">1 of 11</div>
+          <h2 id="helpTitle">Help</h2>
+        </div>
+        <button id="helpCloseBtn" class="help-close" type="button" aria-label="Close help">X</button>
+      </div>
+      <div id="helpBody" class="help-body"></div>
+      <div class="help-panel-actions">
+        <button id="helpPrevBtn" type="button">Previous</button>
+        <button id="helpNextBtn" type="button">Next</button>
+      </div>
+    </aside>
 
     <script src="app.js"></script>
   </body>
